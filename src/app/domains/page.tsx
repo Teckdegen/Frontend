@@ -38,26 +38,28 @@ export default function DomainsPage() {
         
         // For now, we'll just fetch the user's single domain
         // In a real implementation, you might want to index all domains or have a subgraph
-        const [name, tld] = userDomain;
+        if (Array.isArray(userDomain) && userDomain.length >= 2) {
+          const [name, tld] = userDomain;
         
-        if (name && tld) {
-          const domainInfo = await contract.useGetDomainInfo(name, tld);
-          
-          if (domainInfo.data) {
-            const [walletAddress, owner, registrationTimestamp, expiryTimestamp] = domainInfo.data;
+          if (name && tld) {
+            const domainInfo = await contract.useGetDomainInfo(name, tld);
             
-            const domain: DomainInfo = {
-              name,
-              tld,
-              walletAddress,
-              owner,
-              registrationTimestamp: new Date(Number(registrationTimestamp) * 1000),
-              expiryTimestamp: new Date(Number(expiryTimestamp) * 1000),
-              isExpired: new Date() > new Date(Number(expiryTimestamp) * 1000),
-              remainingDays: Math.max(0, Math.floor((Number(expiryTimestamp) * 1000 - Date.now()) / (1000 * 60 * 60 * 24))),
-            };
-            
-            setDomains([domain]);
+            if (domainInfo.data) {
+              const [walletAddress, owner, registrationTimestamp, expiryTimestamp] = domainInfo.data;
+              
+              const domain: DomainInfo = {
+                name,
+                tld,
+                walletAddress,
+                owner,
+                registrationTimestamp: new Date(Number(registrationTimestamp) * 1000),
+                expiryTimestamp: new Date(Number(expiryTimestamp) * 1000),
+                isExpired: new Date() > new Date(Number(expiryTimestamp) * 1000),
+                remainingDays: Math.max(0, Math.floor((Number(expiryTimestamp) * 1000 - Date.now()) / (1000 * 60 * 60 * 24))),
+              };
+              
+              setDomains([domain]);
+            }
           }
         }
       } catch (error) {
