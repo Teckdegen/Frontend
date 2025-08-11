@@ -91,23 +91,11 @@ export default function DomainRegistrationForm({
 
     try {
       setIsRegistering(true);
-      setRegistrationStep('approve');
-
-      // Step 1: Approve USDC spending
-      toast.loading('Approving USDC spending...', { id: 'registration' });
-      
-      const approveResult = await contract.approveUSDC(totalFee);
-      if (!approveResult.success) {
-        throw new Error(approveResult.error || 'Failed to approve USDC');
-      }
-
-      // Wait for approval confirmation
-      await approveResult.wait?.();
-      
       setRegistrationStep('register');
+
+      // Single transaction: Register domain directly
       toast.loading('Registering domain...', { id: 'registration' });
 
-      // Step 2: Register domain with multiple years
       const registerResult = await contract.registerDomain(name, tld, data.walletAddress, data.years);
       if (!registerResult.success) {
         throw new Error(registerResult.error || 'Failed to register domain');
@@ -330,10 +318,7 @@ export default function DomainRegistrationForm({
                     <div style={{ '--delay': 1 } as any}></div>
                     <div style={{ '--delay': 2 } as any}></div>
                   </div>
-                  <span>
-                    {registrationStep === 'approve' && 'Approving USDC...'}
-                    {registrationStep === 'register' && 'Registering Domain...'}
-                  </span>
+                  <span>Registering Domain...</span>
                 </div>
               ) : (
                 <>
@@ -345,7 +330,7 @@ export default function DomainRegistrationForm({
           )}
 
           <p className="text-xs text-gray-400 text-center">
-            Registration requires two transactions: USDC approval and domain registration.
+            Registration requires one transaction to register your domain.
             Make sure you have sufficient USDC and gas fees.
           </p>
         </div>

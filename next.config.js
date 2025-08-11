@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    appDir: true,
+    // appDir is now stable in Next.js 14
   },
   webpack: (config, { isServer }) => {
     // Fix for Web3 libraries
